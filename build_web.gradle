@@ -1,0 +1,70 @@
+apply plugin: 'war'
+apply plugin: 'jetty'
+apply plugin: 'idea'
+
+group = ""
+sourceCompatibility = 1.6
+version = "1.0"
+
+
+repositories {
+	mavenCentral()
+}
+
+task init << {
+	sourceSets.all*.java.srcDirs*.each { it.mkdirs() }
+	sourceSets.all*.resources.srcDirs*.each { it.mkdirs() }
+	//create webapp directory
+  def webappDir = "$rootDir/src/main/webapp"
+  file(webappDir).mkdir()
+
+ //create the WEB-INF directory
+  def webinfDir = webappDir + "/WEB-INF"
+  file(webinfDir).mkdir()
+
+  //create the jsp directory
+  file(webinfDir + "/jsp").mkdir()
+
+  //Create the META-INF directory
+  file(webappDir + "/META-INF").mkdir()
+}
+
+
+
+dependencies {
+	compile "log4j:log4j:1.2.15@jar"
+	compile "org.slf4j:slf4j-log4j12:1.5.2@jar"
+	compile "org.hibernate:hibernate-annotations:3.4.0.GA"
+	compile "javassist:javassist:3.4.GA@jar"
+    compile 'hsqldb:hsqldb:1.8.0.10'
+	compile "org.springframework:spring-webmvc:3.0.5.RELEASE"
+    compile "org.springframework:spring-orm:3.0.5.RELEASE"
+    compile "org.springframework:spring-jdbc:3.0.5.RELEASE"
+    compile "org.springframework:spring-test:3.0.5.RELEASE"
+    compile "commons-dbcp:commons-dbcp:1.4@jar"
+    compile "net.sf.ehcache:ehcache-core:2.4.3@jar"
+    compile "commons-pool:commons-pool:1.5.6@jar"
+	
+    testCompile "junit:junit-dep:4.10"
+	testCompile "org.hamcrest:hamcrest-integration:1.3.RC2"
+	
+	providedCompile "javax.servlet:servlet-api:2.5"
+    providedCompile "javax.servlet:jstl:1.2@jar"
+
+}
+
+idea {
+   project {
+     //if you want to set specific java version for the idea project
+     javaVersion = '1.6'
+   }
+}
+
+task ide << {
+  def libDir = file("$rootDir/src/main/webapp/WEB-INF/lib")
+  ant.delete(dir: libDir)
+  copy {
+	from configurations.testRuntime
+	into libDir
+  }
+}

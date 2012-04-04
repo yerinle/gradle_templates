@@ -1,0 +1,41 @@
+apply plugin: 'groovy'
+apply plugin: 'idea'
+
+group = ""
+sourceCompatibility = 1.6
+version = "1.0"
+
+
+repositories {
+	mavenCentral()
+}
+
+task init << {
+	sourceSets.all*.java.srcDirs*.each { it.mkdirs() }
+	sourceSets.all*.resources.srcDirs*.each { it.mkdirs() }
+}
+
+
+
+dependencies {
+	compile "log4j:log4j:1.2.15@jar"
+	compile "org.slf4j:slf4j-log4j12:1.5.2@jar"
+    testCompile "junit:junit-dep:4.10"
+	testCompile "org.hamcrest:hamcrest-integration:1.3.RC2"
+}
+
+idea {
+   project {
+     //if you want to set specific java version for the idea project
+     javaVersion = '1.6'
+   }
+}
+
+task ide << {
+  def libDir = file("$rootDir/src/main/lib")
+  ant.delete(dir: libDir)
+  copy {
+	from configurations.testRuntime
+	into libDir
+  }
+}
